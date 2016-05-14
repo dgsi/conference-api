@@ -20,7 +20,6 @@ type User struct {
 	Username string `json:"username" form:"username" binding:"required"`
 	Password string `json:"-" form:"password" binding:"required"`
 	IsDefaultPassword bool `json:"-" json:"is_default_password"`
-	Increment string `json:"-"`
 	Token string `json:"token,omitempty"`
 }
 

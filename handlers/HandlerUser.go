@@ -2,9 +2,9 @@ package handlers
 
 import(
 	"net/http"
-	"strconv"
 	"strings"
 	"fmt"
+	"strconv"
 	"crypto/aes"
     "crypto/cipher"
     "encoding/base64"
@@ -40,13 +40,12 @@ func (handler UserHandler) Create(c *gin.Context) {
 	query := handler.db.Last(&user)
 
 	if query.RowsAffected == 0 {
-		newUser.Increment = "1"
+		newUser.Username = newUser.UserRole + "1"
 	} else {
-		i,_ := strconv.Atoi(newUser.Increment)
-		newUser.Increment = strconv.Itoa(i+1)	
+		newUser.Username = newUser.UserRole + strconv.Itoa(user.Id+1)
 	}
 
-	newUser.Username = newUser.UserRole + newUser.Increment
+	//insert record to database
 	result := handler.db.Create(&newUser)
 
 	if result.RowsAffected == 1 {
