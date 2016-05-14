@@ -17,7 +17,7 @@ type User struct {
 	LastName string `json:"last_name" form:"last_name" binding:"required"`
 	Status string `json:"status" form:"status"`
 	UserRole string `json:"user_role" form:"user_role" binding:"required"`
-	UserName string `json:"username" form:"username" binding:"required"`
+	Username string `json:"username" form:"username" binding:"required"`
 	Password string `form:"password" binding:"required"`
 	IsDefaultPassword bool `json:"is_default_password"`
 	Increment string
