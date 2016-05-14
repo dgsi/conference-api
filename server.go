@@ -7,7 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	//h "conference/dgsi/api/handlers"
+	h "conference/dgsi/api/handlers"
+	m "conference/dgsi/api/models"
 	"conference/dgsi/api/config"
 	"github.com/jinzhu/gorm"
 	"github.com/gin-gonic/contrib/jwt"
@@ -21,10 +22,12 @@ func main() {
 
 func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	private := r.Group("/api/v1")
-	//public := r.Group("/api/v1")
+	public := r.Group("/api/v1")
 	private.Use(jwt.Auth(config.GetString("TOKEN_KEY")))
 
-	//manage rooms
+	//manage users
+	userHandler := h.NewUserHandler(db)
+	public.POST("/user", userHandler.Create)
 
 	var port = os.Getenv("PORT")
 	if port == "" {
@@ -47,8 +50,7 @@ func InitDB() *gorm.DB {
 	}
 	_db.DB()
 	_db.LogMode(true)
-	//_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.Category{})
-	_db.Set("gorm:table_options", "ENGINE=InnoDB")
+	_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.User{})
 	return _db
 }
 
