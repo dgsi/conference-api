@@ -23,6 +23,13 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{db}
 }
 
+//get listing of all active user
+func (handler UserHandler) Index(c *gin.Context) {
+	users := []m.User{}
+	handler.db.Where("status = ?","active").Find(&users)
+	c.JSON(http.StatusOK,users)
+}
+
 //create new user
 func (handler UserHandler) Create(c *gin.Context) {
 	var newUser m.User

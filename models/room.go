@@ -19,5 +19,5 @@ func (r *Room) BeforeCreate() (err error) {
 	} else if strings.TrimSpace(r.Capacity) == "" {
 		err = errors.New("Please specify the room's capacity")
 	}
-	return nil
+	return
 }

@@ -18,10 +18,10 @@ type User struct {
 	Status string `json:"status" form:"status"`
 	UserRole string `json:"user_role" form:"user_role" binding:"required"`
 	Username string `json:"username" form:"username" binding:"required"`
-	Password string `form:"password" binding:"required"`
-	IsDefaultPassword bool `json:"is_default_password"`
-	Increment string
-	Token string `json:"token"`
+	Password string `json:"-" form:"password" binding:"required"`
+	IsDefaultPassword bool `json:"-" json:"is_default_password"`
+	Increment string `json:"-"`
+	Token string `json:"token,omitempty"`
 }
 
 func (u *User) BeforeCreate() (err error) {
