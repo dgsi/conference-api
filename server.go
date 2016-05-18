@@ -42,6 +42,10 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	topicHandler := h.NewTopicHandler(db)
 	public.POST("/topic", topicHandler.Create)
 
+	//manage members
+	memberHandler := h.NewMemberHandler(db)
+	public.POST("/member", memberHandler.Create)
+
 	var port = os.Getenv("PORT")
 	if port == "" {
 		port = "9000"
@@ -63,7 +67,7 @@ func InitDB() *gorm.DB {
 	}
 	_db.DB()
 	_db.LogMode(true)
-	_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.User{},&m.Room{},&m.Topic{})
+	_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.User{},&m.Room{},&m.Topic{},&m.Member{})
 	return _db
 }
 
