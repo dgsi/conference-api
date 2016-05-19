@@ -45,6 +45,8 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	//manage members
 	memberHandler := h.NewMemberHandler(db)
 	public.POST("/member", memberHandler.Create)
+	public.GET("/members", memberHandler.Index)
+	public.GET("/members/:member_id", memberHandler.Show)
 
 	var port = os.Getenv("PORT")
 	if port == "" {

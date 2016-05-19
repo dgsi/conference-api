@@ -18,6 +18,19 @@ func NewMemberHandler(db *gorm.DB) *MemberHandler {
 	return &MemberHandler{db}
 }
 
+func (handler MemberHandler) Index (c *gin.Context) {
+	members := []m.Member{}
+	handler.db.Where("status = ? ","active").Find(&members)
+	c.JSON(http.StatusOK,members)
+}
+
+func (handler MemberHandler) Show (c *gin.Context) {
+	member_id := c.Param("member_id")
+	member := m.Member{}
+	handler.db.Where("status = ? AND custom_id = ?","active",member_id).First(&member)
+	c.JSON(http.StatusOK,member)
+}
+
 func (handler MemberHandler) Create (c *gin.Context) {
 	var newMember m.Member
 	c.Bind(&newMember)
