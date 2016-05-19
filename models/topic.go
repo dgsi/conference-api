@@ -7,6 +7,7 @@ import (
 type Topic struct {
 	BaseModel
 	Title string `json:"title" form:"title" binding:"required"`
+	Description string `json:"description" form:"description" binding:"required"`
 	Speaker string `json:"speaker" form:"speaker" binding:"required"`
 	RoomNo int `json:"room_no" form:"room_no" binding:"required"`
 	StartTime time.Time `json:"start_time" form:"start_time" binding:"required"`
