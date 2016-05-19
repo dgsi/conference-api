@@ -41,6 +41,9 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	//manage topics
 	topicHandler := h.NewTopicHandler(db)
 	public.POST("/topic", topicHandler.Create)
+	public.GET("/topics", topicHandler.Index)
+	public.GET("/topics/:topic_id", topicHandler.Show)
+	public.PUT("/topic/:topic_id", topicHandler.Update)
 
 	//manage members
 	memberHandler := h.NewMemberHandler(db)

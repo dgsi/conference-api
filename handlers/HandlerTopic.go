@@ -16,6 +16,25 @@ func NewTopicHandler(db *gorm.DB) *TopicHandler {
 	return &TopicHandler{db}
 }
 
+//get all topics
+func (handler TopicHandler) Index(c *gin.Context) {
+	topics := []m.Topic{}
+	handler.db.Find(&topics)
+	c.JSON(http.StatusOK,topics)
+}
+
+//show topic by topic id
+func (handler TopicHandler) Show(c *gin.Context) {
+	topic_id := c.Param("topic_id")
+	topic := m.Topic{}
+	query := handler.db.Where("id = ?",topic_id).First(&topic)
+	if query.RowsAffected > 0 {
+		c.JSON(http.StatusOK,topic)
+	} else {
+		respond(http.StatusBadRequest,"Unable to find topic",c,true)
+	}
+}
+
 //create new topic
 func (handler TopicHandler) Create(c *gin.Context) {
 	var newTopic m.Topic
@@ -48,3 +67,9 @@ func (handler TopicHandler) Create(c *gin.Context) {
 		}	
 	}
 }
+
+//update schedule
+func (handler TopicHandler) Update (c *gin.Context) {
+
+}
+
