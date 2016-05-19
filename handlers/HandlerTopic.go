@@ -31,9 +31,22 @@ func (handler TopicHandler) Show(c *gin.Context) {
 	if query.RowsAffected > 0 {
 		c.JSON(http.StatusOK,topic)
 	} else {
+		respond(http.StatusBadRequest,"Unable to find room",c,true)
+	}
+}
+
+//show topics in a room
+func (handler TopicHandler) RoomTopics(c *gin.Context) {
+	topic_id := c.Param("room_id")
+	topics := []m.Topic{}
+	query := handler.db.Where("room_no = ?",topic_id).First(&topics)
+	if query.RowsAffected > 0 {
+		c.JSON(http.StatusOK,topics)
+	} else {
 		respond(http.StatusBadRequest,"Unable to find topic",c,true)
 	}
 }
+
 
 //create new topic
 func (handler TopicHandler) Create(c *gin.Context) {

@@ -43,6 +43,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	public.POST("/topic", topicHandler.Create)
 	public.GET("/topics", topicHandler.Index)
 	public.GET("/topics/:topic_id", topicHandler.Show)
+	public.GET("/room/:room_id/topics", topicHandler.RoomTopics)
 	public.PUT("/topic/:topic_id", topicHandler.Update)
 
 	//manage members
