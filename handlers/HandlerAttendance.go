@@ -128,4 +128,14 @@ func ProceedWithSaving(isManual bool, newAttendance m.Attendance, topics []m.Top
 	}
 }
 
+func (handler AttendanceHandler) AttendeesByRoom(c *gin.Context) {
+	room_id := c.Param("room_id")
+	attendees := []m.QryAttendance{}
+	handler.db.Where("room_id = ? AND status = ?",room_id,"time in").Find(&attendees)
+	c.JSON(http.StatusOK, attendees)
+}
+
+
+
+
 

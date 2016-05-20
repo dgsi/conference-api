@@ -55,6 +55,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	//manage attendance
 	attendanceHandler := h.NewAttendanceHandler(db)
 	public.POST("/attendance", attendanceHandler.Create)
+	public.GET("/attendees/room/:room_id", attendanceHandler.AttendeesByRoom)
 
 	var port = os.Getenv("PORT")
 	if port == "" {
