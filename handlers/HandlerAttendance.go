@@ -134,8 +134,7 @@ func (handler AttendanceHandler) AttendeesByRoom(c *gin.Context) {
 	handler.db.Where("room_id = ? AND status = ?",room_id,"time in").Find(&attendees)
 	c.JSON(http.StatusOK, attendees)
 }
-
-
+ 
 
 
 

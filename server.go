@@ -57,6 +57,13 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	public.POST("/attendance", attendanceHandler.Create)
 	public.GET("/attendees/room/:room_id", attendanceHandler.AttendeesByRoom)
 
+	//manage room assignments
+	assignmentHandler := h.NewRoomAssignmentHandler(db)
+	public.GET("/assignments", assignmentHandler.Index)
+	public.POST("/room/assign", assignmentHandler.Create)
+	public.GET("/assignments/user/:user_id", assignmentHandler.GetAssignementByUser)
+	public.GET("/assignments/room/:room_id", assignmentHandler.GetAssigneePerRoom)
+
 	var port = os.Getenv("PORT")
 	if port == "" {
 		port = "9000"
@@ -78,17 +85,6 @@ func InitDB() *gorm.DB {
 	}
 	_db.DB()
 	_db.LogMode(true)
-	_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.User{},&m.Room{},&m.Topic{},&m.Member{},&m.Attendance{})
+	_db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&m.User{},&m.Room{},&m.Topic{},&m.Member{},&m.Attendance{},&m.RoomAssignment{})
 	return _db
-}
-
-func GetPort() string {
-    var port = os.Getenv("PORT")
-    // Set a default port if there is nothing in the environment
-    if port == "" {
-        port = "8000"
-        fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
-    }
-    fmt.Println("port -----> ", port)
-    return ":" + port
 }
