@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"time"
+	"fmt"
 	"strconv"
 	"net/http"
 	"github.com/jinzhu/gorm"
@@ -65,9 +66,10 @@ func (handler TopicHandler) Create(c *gin.Context) {
 	} else if newTopic.StartTime.Hour() == newTopic.EndTime.Hour() {
 		respond(http.StatusBadRequest,"Invalid start time and end time",c,true)
 	} else {
+		fmt.Println("1")
 		topics := []m.Topic{}
 		query := handler.db.Where("room_no = ? AND start_time BETWEEN ? AND ?",newTopic.RoomNo,newTopic.StartTime,newTopic.EndTime).Find(&topics)
-
+		fmt.Println("2")
 		if query.RowsAffected > 0 {
 			respond(http.StatusBadRequest,"Unable to create topic found conflict with other schedules, Please double check the topic schedules",c,true)
 		} else {
@@ -106,35 +108,17 @@ func (handler TopicHandler) Update (c *gin.Context) {
 					canUpdate = false
 					respond(http.StatusBadRequest,"End time must not be earlier than start time 111",c,true)
 				} else if startTime.Hour() == topic.EndTime.Hour() {
+					canUpdate = false
 					respond(http.StatusBadRequest,"Invalid start time and end time",c,true)
 				} else {
 					topics := []m.Topic{}
-					conflict := handler.db.Where("id != ? AND room_no = ? AND start_time BETWEEN ? AND ?",topic.Id,roomNo,startTime,topic.EndTime).Find(&topics)
+					conflict := handler.db.Where("id != ? AND room_no = ? AND (start_time BETWEEN ? AND ?)",topic_id,roomNo,startTime,endTime).Find(&topics)
 
 					if conflict.RowsAffected > 0 {
+						canUpdate = false
 						respond(http.StatusBadRequest,"Unable to update topic found conflict with other schedules, Please double check the topic schedules",c,true)
 					} else {
 						topic.StartTime = startTime
-					}	
-				}
-			}	
-
-			//validation for end time
-			if c.PostForm("end_time") != "" {
-
-				if endTime.Before(startTime) {
-					canUpdate = false
-					respond(http.StatusBadRequest,"End time must not be earlier than start time",c,true)
-				} else if endTime.Hour() == topic.StartTime.Hour() {
-					respond(http.StatusBadRequest,"Invalid start time and end time",c,true)
-				} else {
-					topics := []m.Topic{}
-					conflict := handler.db.Where("id != ? AND room_no = ? AND start_time BETWEEN ? AND ?",topic.Id,roomNo,topic.StartTime,endTime).Find(&topics)
-
-					if conflict.RowsAffected > 0 {
-						respond(http.StatusBadRequest,"Unable to update topic found conflict with other schedules, Please double check the topic schedules",c,true)
-					} else {
-						topic.EndTime = endTime
 					}	
 				}
 			}	
