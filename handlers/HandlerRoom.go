@@ -20,7 +20,7 @@ func NewRoomHandler(db *gorm.DB) *RoomHandler {
 //show all rooms
 func (handler RoomHandler) Index(c *gin.Context) {
 	rooms := []m.Room{}
-	handler.db.Where("status = ?","active").Find(&rooms)
+	handler.db.Where("status = ?","active").Order("created_at desc").Find(&rooms)
 	c.JSON(http.StatusOK,rooms)
 }
 
@@ -74,7 +74,7 @@ func (handler RoomHandler) Update(c *gin.Context) {
 			if newCapacity < 10 {
 				respond(http.StatusBadRequest,"Room capacity must be atleast greater than 10",c,true)
 			} else {
-				room.Capacity = capacity
+				room.Capacity = newCapacity
 				status := c.PostForm("status")
 				if (strings.TrimSpace("status") != "") {
 					room.Status = status
