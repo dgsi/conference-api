@@ -28,6 +28,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	//manage users
 	userHandler := h.NewUserHandler(db)
 	public.GET("/users", userHandler.Index)
+	public.PUT("/users/:user_id", userHandler.Update)
 	public.POST("/user", userHandler.Create)
 	public.POST("/login", userHandler.Login)
 

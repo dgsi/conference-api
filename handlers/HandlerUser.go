@@ -26,7 +26,7 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 //get listing of all active user
 func (handler UserHandler) Index(c *gin.Context) {
 	users := []m.User{}
-	handler.db.Where("status = ?","active").Find(&users)
+	handler.db.Where("status = ?","active").Order("created_at desc").Find(&users)
 	c.JSON(http.StatusOK,users)
 }
 
@@ -54,6 +54,25 @@ func (handler UserHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusCreated, newUser)
 	} else {
 		respond(http.StatusBadRequest, result.Error.Error(),c,true)
+	}
+}
+
+//update user
+func (handler UserHandler) Update(c *gin.Context) {
+	user_id := c.Param("user_id")
+	user := m.User{}
+	query := handler.db.Where("id = ?",user_id).First(&user)
+	if query.RowsAffected > 0 {
+		user.FirstName = c.PostForm("first_name")
+		user.LastName = c.PostForm("last_name")
+		result := handler.db.Save(&user)
+		if result.RowsAffected > 0 {
+			c.JSON(http.StatusOK,user)
+		} else {
+			respond(http.StatusBadRequest,result.Error.Error(),c,true)
+		}
+	} else {
+		respond(http.StatusBadRequest,"User record not found",c,true)		
 	}
 }
 
