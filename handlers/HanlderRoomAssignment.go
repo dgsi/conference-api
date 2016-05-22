@@ -37,6 +37,16 @@ func (handler RoomAssignmentHandler) GetAssigneePerRoom (c *gin.Context) {
 	c.JSON(http.StatusOK,assignments)
 }
 
+func (handler RoomAssignmentHandler) Delete (c *gin.Context) {
+	id := c.Param("id")
+	result := handler.db.Where("id = ?",id).Delete(m.RoomAssignment{})
+	if result.RowsAffected > 0 {
+		respond(http.StatusOK,"Assignment successfully deleted",c,false)
+	} else {
+		respond(http.StatusBadRequest,result.Error.Error(),c,true)
+	}
+}
+
 func (handler RoomAssignmentHandler) Create (c *gin.Context) {
 	var newAssignment m.RoomAssignment
 	c.Bind(&newAssignment)
@@ -58,7 +68,9 @@ func (handler RoomAssignmentHandler) Create (c *gin.Context) {
 			} else {
 				result := handler.db.Create(&newAssignment)
 				if result.RowsAffected > 0 {
-					c.JSON(http.StatusCreated,newAssignment)
+					qryAssignment := m.QryAssignment{}
+					handler.db.Where("assignment_id = ?",newAssignment.Id).First(&qryAssignment)
+					c.JSON(http.StatusCreated,qryAssignment)
 				} else {
 					respond(http.StatusBadRequest,result.Error.Error(),c,true)
 				}

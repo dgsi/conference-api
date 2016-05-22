@@ -64,6 +64,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	public.POST("/room/assign", assignmentHandler.Create)
 	public.GET("/assignments/user/:user_id", assignmentHandler.GetAssignementByUser)
 	public.GET("/assignments/room/:room_id", assignmentHandler.GetAssigneePerRoom)
+	public.DELETE("/assignments/delete/:id", assignmentHandler.Delete)
 
 	var port = os.Getenv("PORT")
 	if port == "" {
