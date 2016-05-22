@@ -18,21 +18,21 @@ func NewRoomAssignmentHandler(db *gorm.DB) *RoomAssignmentHandler {
 }
 
 func (handler RoomAssignmentHandler) Index (c *gin.Context) {
-	assignments := []m.RoomAssignment{}
+	assignments := []m.QryAssignment{}
 	handler.db.Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
 
 func (handler RoomAssignmentHandler) GetAssignementByUser (c *gin.Context) {
 	user_id := c.Param("user_id")
-	assignments := []m.RoomAssignment{}
+	assignments := []m.QryAssignment{}
 	handler.db.Where("user_id = ?",user_id).Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
 
 func (handler RoomAssignmentHandler) GetAssigneePerRoom (c *gin.Context) {
 	room_id := c.Param("room_id")
-	assignments := []m.RoomAssignment{}
+	assignments := []m.QryAssignment{}
 	handler.db.Where("room_id = ?",room_id).Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
@@ -50,11 +50,11 @@ func (handler RoomAssignmentHandler) Create (c *gin.Context) {
 		roomQuery := handler.db.Where("id = ?",newAssignment.RoomId).First(&room)
 		if roomQuery.RowsAffected > 0 {
 			//check if user has no room assignment yet
-			assignment := m.RoomAssignment{}
+			assignment := m.QryAssignment{}
 			query := handler.db.Where("user_id = ?",newAssignment.UserId).Last(&assignment)
 
 			if query.RowsAffected > 0 {
-				respond(http.StatusBadRequest,fmt.Sprintf("Sorry but user is already assigned at room no %v",assignment.RoomId),c,true)
+				respond(http.StatusBadRequest,fmt.Sprintf("Sorry but %v is already assigned at room no %v",assignment.User,assignment.RoomId),c,true)
 			} else {
 				result := handler.db.Create(&newAssignment)
 				if result.RowsAffected > 0 {
