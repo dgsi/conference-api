@@ -1,6 +1,7 @@
 package handlers
 
 import(
+	"fmt"
 	"net/http"
 	"strings"
 	"strconv"
@@ -41,6 +42,7 @@ func (handler RoomHandler) Create(c *gin.Context) {
 
 	//insert record to database
 	result := handler.db.Create(&newRoom)
+	fmt.Printf("\nrows affected --> %v",result.RowsAffected)
 
 	if result.RowsAffected == 1 {
 		c.JSON(http.StatusCreated, newRoom)
