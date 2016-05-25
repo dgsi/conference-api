@@ -46,6 +46,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 	public.GET("/topics/:topic_id", topicHandler.Show)
 	public.GET("/room/:room_id/topics", topicHandler.RoomTopics)
 	public.PUT("/topic/:topic_id", topicHandler.Update)
+	public.DELETE("/topic/delete/:topic_id", topicHandler.Delete)
 
 	//manage members
 	memberHandler := h.NewMemberHandler(db)
@@ -68,7 +69,7 @@ func LoadAPIRoutes(r *gin.Engine, db *gorm.DB) {
 
 	var port = os.Getenv("PORT")
 	if port == "" {
-		port = "9000"
+		port = "8080"
 	}
 	fmt.Println("PORT ---> ",port)
 	r.Run(fmt.Sprintf(":%s", port))

@@ -17,27 +17,27 @@ func NewRoomAssignmentHandler(db *gorm.DB) *RoomAssignmentHandler {
 	return &RoomAssignmentHandler{db}
 }
 
-func (handler RoomAssignmentHandler) Index (c *gin.Context) {
+func (handler RoomAssignmentHandler) Index(c *gin.Context) {
 	assignments := []m.QryAssignment{}
 	handler.db.Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
 
-func (handler RoomAssignmentHandler) GetAssignementByUser (c *gin.Context) {
+func (handler RoomAssignmentHandler) GetAssignementByUser(c *gin.Context) {
 	user_id := c.Param("user_id")
 	assignments := []m.QryAssignment{}
 	handler.db.Where("user_id = ?",user_id).Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
 
-func (handler RoomAssignmentHandler) GetAssigneePerRoom (c *gin.Context) {
+func (handler RoomAssignmentHandler) GetAssigneePerRoom(c *gin.Context) {
 	room_id := c.Param("room_id")
 	assignments := []m.QryAssignment{}
 	handler.db.Where("room_id = ?",room_id).Find(&assignments)
 	c.JSON(http.StatusOK,assignments)
 }
 
-func (handler RoomAssignmentHandler) Delete (c *gin.Context) {
+func (handler RoomAssignmentHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 	result := handler.db.Where("id = ?",id).Delete(m.RoomAssignment{})
 	if result.RowsAffected > 0 {
@@ -47,7 +47,7 @@ func (handler RoomAssignmentHandler) Delete (c *gin.Context) {
 	}
 }
 
-func (handler RoomAssignmentHandler) Create (c *gin.Context) {
+func (handler RoomAssignmentHandler) Create(c *gin.Context) {
 	var newAssignment m.RoomAssignment
 	c.Bind(&newAssignment)
 

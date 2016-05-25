@@ -91,8 +91,9 @@ func (handler UserHandler) Login(c *gin.Context) {
 		if result.RowsAffected == 1 {
 			decryptedPassword := decrypt([]byte(config.GetString("CRYPT_KEY")), user.Password)
 			if password == decryptedPassword {
-				user.Token = generateJWT(user.Username)
-				c.JSON(http.StatusOK, user)
+				qryUser := m.QryUser{}
+				handler.db.Where("user_id = ?",user.Id).First(&qryUser)
+				c.JSON(http.StatusOK, qryUser)
 			} else {
 				respond(http.StatusBadRequest,"Account not found!",c,true)
 			}

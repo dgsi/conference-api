@@ -116,7 +116,9 @@ func ProceedWithSaving(isManual bool, newAttendance m.Attendance, topics []m.Top
 			result := handler.db.Create(&newAttendance)
 
 			if result.RowsAffected > 0 {
-				c.JSON(http.StatusCreated,newAttendance)
+				qryAttendance := m.QryAttendance{}
+				handler.db.Where("id = ?",newAttendance.Id).First(&qryAttendance)
+				c.JSON(http.StatusCreated,qryAttendance)
 			} else {
 				respond(http.StatusBadRequest,result.Error.Error(),c,true)
 			}
@@ -124,14 +126,15 @@ func ProceedWithSaving(isManual bool, newAttendance m.Attendance, topics []m.Top
 			respond(http.StatusBadRequest,errMsg,c,true)
 		}
 	} else {
-		respond(http.StatusBadRequest,"There are no scheduled topic in this room right now 22",c,true)
+		respond(http.StatusBadRequest,"There are no scheduled topic in this room right now",c,true)
 	}
 }
 
 func (handler AttendanceHandler) AttendeesByRoom(c *gin.Context) {
 	room_id := c.Param("room_id")
+	status := c.Query("status")
 	attendees := []m.QryAttendance{}
-	handler.db.Where("room_id = ? AND status = ?",room_id,"time in").Find(&attendees)
+	handler.db.Where("room_id = ? AND status = ?",room_id,status).Find(&attendees)
 	c.JSON(http.StatusOK, attendees)
 }
  

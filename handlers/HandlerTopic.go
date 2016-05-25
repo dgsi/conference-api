@@ -41,23 +41,21 @@ func (handler TopicHandler) Show(c *gin.Context) {
 func (handler TopicHandler) RoomTopics(c *gin.Context) {
 	topic_id := c.Param("room_id")
 	topics := []m.Topic{}
-	query := handler.db.Where("room_no = ?",topic_id).First(&topics)
-	if query.RowsAffected > 0 {
-		c.JSON(http.StatusOK,topics)
-	} else {
-		respond(http.StatusBadRequest,"Unable to find topic",c,true)
-	}
+	handler.db.Where("room_no = ?",topic_id).Find(&topics)
+	c.JSON(http.StatusOK,topics)
 }
-
 
 //create new topic
 func (handler TopicHandler) Create(c *gin.Context) {
 	var newTopic m.Topic
 	c.Bind(&newTopic)
 
-	startDate,_ := time.Parse(time.RFC3339,c.PostForm("start_time"))
-	endDate,_ := time.Parse(time.RFC3339,c.PostForm("end_time"))
+	fmt.Printf("\nBEFORE PARSE --> %v",c.PostForm("start_time"))
+	loc,_ := time.LoadLocation("Asia/Manila")
+	startDate,_ := time.ParseInLocation(time.RFC3339,c.PostForm("start_time"),loc)
+	endDate,_ := time.ParseInLocation(time.RFC3339,c.PostForm("end_time"),loc)
 
+	fmt.Printf("\nAFTER PARSE ---> %v\n\n",startDate)
 	newTopic.StartTime = startDate
 	newTopic.EndTime = endDate
 
@@ -68,24 +66,24 @@ func (handler TopicHandler) Create(c *gin.Context) {
 	} else {
 		fmt.Println("1")
 		topics := []m.Topic{}
-		query := handler.db.Where("room_no = ? AND start_time BETWEEN ? AND ?",newTopic.RoomNo,newTopic.StartTime,newTopic.EndTime).Find(&topics)
+		query := handler.db.Where("room_no = ? AND (start_time <= ? AND end_time > ?)",newTopic.RoomNo,newTopic.StartTime,newTopic.StartTime).Find(&topics)
 		fmt.Println("2")
 		if query.RowsAffected > 0 {
 			respond(http.StatusBadRequest,"Unable to create topic found conflict with other schedules, Please double check the topic schedules",c,true)
 		} else {
 			result := handler.db.Create(&newTopic)
-
+			fmt.Printf("\nAFTER SAVING --> %v",newTopic.StartTime)
 			if result.RowsAffected > 0 {
 				c.JSON(http.StatusCreated, newTopic)
 			} else {
-				respond(http.StatusBadRequest, result.Error.Error(),c,true)
+				respond(http.StatusBadRequest,result.Error.Error(),c,true)
 			}
 		}	
 	}
 }
 
 //update schedule
-func (handler TopicHandler) Update (c *gin.Context) {
+func (handler TopicHandler) Update(c *gin.Context) {
 	topic_id := c.Param("topic_id")
 	topic := m.Topic{}
 
@@ -98,8 +96,9 @@ func (handler TopicHandler) Update (c *gin.Context) {
 		if query.RowsAffected > 0 {
 			canUpdate := true
 
-			startTime,_ := time.Parse(time.RFC3339,c.PostForm("start_time"))
-			endTime,_ := time.Parse(time.RFC3339,c.PostForm("end_time"))
+			loc,_ := time.LoadLocation("Asia/Manila")
+			startTime,_ := time.ParseInLocation(time.RFC3339,c.PostForm("start_time"),loc)
+			endTime,_ := time.ParseInLocation(time.RFC3339,c.PostForm("end_time"),loc)
 
 			//validation for start time
 			if c.PostForm("start_time") != "" {
@@ -112,7 +111,7 @@ func (handler TopicHandler) Update (c *gin.Context) {
 					respond(http.StatusBadRequest,"Invalid start time and end time",c,true)
 				} else {
 					topics := []m.Topic{}
-					conflict := handler.db.Where("id != ? AND room_no = ? AND (start_time BETWEEN ? AND ?)",topic_id,roomNo,startTime,endTime).Find(&topics)
+					conflict := handler.db.Where("id != ? AND room_no = ? AND (start_time <= ? AND end_time > ?)",topic_id,roomNo,startTime,startTime).Find(&topics)
 
 					if conflict.RowsAffected > 0 {
 						canUpdate = false
@@ -141,6 +140,9 @@ func (handler TopicHandler) Update (c *gin.Context) {
 					topic.RoomNo = roomNo
 				}
 
+				topic.StartTime = startTime
+				topic.EndTime = endTime
+
 				update := handler.db.Save(&topic)
 				if update.RowsAffected > 0 {
 					c.JSON(http.StatusOK,topic)
@@ -153,6 +155,22 @@ func (handler TopicHandler) Update (c *gin.Context) {
 		}
 	} else {
 		respond(http.StatusBadRequest,"Unable to find room",c,true)
+	}
+}
+
+func (handler TopicHandler) Delete(c *gin.Context) {
+	topic_id := c.Param("topic_id")	
+	attendance := m.Attendance{}
+	query := handler.db.Where("topic_id = ?",topic_id).First(&attendance)
+	if query.RowsAffected > 0 {
+		respond(http.StatusBadRequest,"This topic already have attendees, cannot proceed with deletion",c,true)
+	} else {
+		result := handler.db.Where("id = ?",topic_id).Delete(m.Topic{})
+		if result.RowsAffected > 0 {
+			respond(http.StatusOK,"Topic successfully deleted",c,false)
+		} else {
+			respond(http.StatusBadRequest,result.Error.Error(),c,true)
+		}
 	}
 }
 

@@ -20,7 +20,7 @@ func NewMemberHandler(db *gorm.DB) *MemberHandler {
 
 func (handler MemberHandler) Index (c *gin.Context) {
 	members := []m.Member{}
-	handler.db.Where("status = ? ","active").Find(&members)
+	handler.db.Where("status = ? ","active").Order("created_at desc").Find(&members)
 	c.JSON(http.StatusOK,members)
 }
 
