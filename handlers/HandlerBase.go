@@ -11,7 +11,7 @@ func respond(statusCode int, responseMessage string, c *gin.Context, isError boo
 	response := &Response{Message: responseMessage}
 	c.JSON(statusCode,response)
 	if isError {
-		c.Abort()		
+		c.AbortWithStatus(statusCode)		
 	}
 }
 
