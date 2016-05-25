@@ -33,7 +33,7 @@ func (handler RoomHandler) Create(c *gin.Context) {
 	room := m.Room{}	
 	query := handler.db.Last(&room)
 
-	if query.RowsAffected == 0 {
+	if query.RowsAffected > 0 {
 		newRoom.RoomNo = "Room 1"
 	} else {
 		newRoom.RoomNo = "Room " + strconv.Itoa(room.Id+1)
@@ -42,7 +42,7 @@ func (handler RoomHandler) Create(c *gin.Context) {
 	//insert record to database
 	result := handler.db.Create(&newRoom)
 
-	if result.RowsAffected == 1 {
+	if result.RowsAffected > 1 {
 		c.JSON(http.StatusCreated, newRoom)
 	} else {
 		respond(http.StatusBadRequest, result.Error.Error(),c,true)
