@@ -31,8 +31,9 @@ CREATE TABLE `attendances` (
   `scanned_by` int(11) DEFAULT NULL,
   `mode` varchar(255) DEFAULT NULL,
   `tito` timestamp NULL DEFAULT NULL,
+  `time_in_time_out` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +42,7 @@ CREATE TABLE `attendances` (
 
 LOCK TABLES `attendances` WRITE;
 /*!40000 ALTER TABLE `attendances` DISABLE KEYS */;
+INSERT INTO `attendances` VALUES (13,'2016000001',4,2,'time in',1,'scan','2016-05-25 18:53:00',NULL),(14,'2016000001',4,2,'time out',1,'scan','2016-05-25 18:53:00',NULL),(15,'2016000002',4,2,'time in',1,'scan','2016-05-25 18:53:00',NULL),(16,'2016000002',4,2,'time out',1,'scan','2016-05-25 18:54:00',NULL),(17,'2016000002',4,2,'time in',1,'scan','2016-05-25 18:54:00',NULL);
 /*!40000 ALTER TABLE `attendances` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +66,7 @@ CREATE TABLE `members` (
   `gender` varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,6 +75,7 @@ CREATE TABLE `members` (
 
 LOCK TABLES `members` WRITE;
 /*!40000 ALTER TABLE `members` DISABLE KEYS */;
+INSERT INTO `members` VALUES (1,'2016-05-25 14:33:48','2016-05-25 14:33:48','2016000001','Kobe','Bryant','Los Angeles','09151234567','blackmamba@gmail.com','male','active'),(2,'2016-05-25 15:52:56','2016-05-25 15:52:56','2016000002','Lebron','James','Cleveland','09271234567','Cleveland','male','active'),(3,'2016-05-25 15:56:06','2016-05-25 15:56:06','2016000003','Stephen','Curry','Golden State','30','Golden State','male','active'),(4,'2016-05-25 15:58:07','2016-05-25 15:58:07','2016000004','Hello','World','Aaaa','09444','Aaaa','female','active');
 /*!40000 ALTER TABLE `members` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,6 +127,28 @@ SET character_set_client = utf8;
  1 AS `room_status`,
  1 AS `capacity`,
  1 AS `scanned_by`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `qry_users`
+--
+
+DROP TABLE IF EXISTS `qry_users`;
+/*!50001 DROP VIEW IF EXISTS `qry_users`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `qry_users` AS SELECT 
+ 1 AS `user_id`,
+ 1 AS `first_name`,
+ 1 AS `last_name`,
+ 1 AS `user_role`,
+ 1 AS `username`,
+ 1 AS `status`,
+ 1 AS `password`,
+ 1 AS `is_default_password`,
+ 1 AS `room_id`,
+ 1 AS `room_no`,
+ 1 AS `capacity`*/;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -199,7 +224,7 @@ CREATE TABLE `topics` (
   `start_time` timestamp NULL DEFAULT NULL,
   `end_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,6 +233,7 @@ CREATE TABLE `topics` (
 
 LOCK TABLES `topics` WRITE;
 /*!40000 ALTER TABLE `topics` DISABLE KEYS */;
+INSERT INTO `topics` VALUES (2,'2016-05-25 14:30:30','2016-05-25 14:30:37','Aaaa','Aaa','Aaa',2,'2016-05-25 00:00:00','2016-05-25 02:00:00'),(3,'2016-05-25 14:31:04','2016-05-25 14:31:04','Bbb','Bv','Bv',2,'2016-05-25 02:00:00','2016-05-25 03:00:00'),(4,'2016-05-25 17:16:05','2016-05-25 17:16:05','Hello World','','Rodrigo Duterte',2,'2016-05-25 17:15:00','2016-05-25 19:15:00');
 /*!40000 ALTER TABLE `topics` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -279,6 +305,24 @@ UNLOCK TABLES;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `qry_users`
+--
+
+/*!50001 DROP VIEW IF EXISTS `qry_users`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `qry_users` AS select `u`.`id` AS `user_id`,`u`.`first_name` AS `first_name`,`u`.`last_name` AS `last_name`,`u`.`user_role` AS `user_role`,`u`.`username` AS `username`,`u`.`status` AS `status`,`u`.`password` AS `password`,`u`.`is_default_password` AS `is_default_password`,`r`.`id` AS `room_id`,`r`.`room_no` AS `room_no`,`r`.`capacity` AS `capacity` from ((`room_assignments` `ra` join `users` `u` on((`ra`.`user_id` = `u`.`id`))) join `rooms` `r` on((`ra`.`room_id` = `r`.`id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -289,4 +333,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-24  9:13:59
+-- Dump completed on 2016-05-26  3:08:13
