@@ -14,8 +14,4 @@ type Room struct {
 
 func (r *Room) BeforeCreate() (err error) {
 	r.Status = "active"
-	if strings.TrimSpace(r.RoomNo) == "" {
-		err = errors.New("Please specify the room no")
-	}
-	return
 }
